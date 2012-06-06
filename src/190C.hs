@@ -1,5 +1,10 @@
 module Main where
 
+import Control.Monad
+import Control.Monad.ST
+import Data.Array.IO
+import Data.Array.ST
+
 f :: [Int] -> [[Char]] -> [[Char]] -> [Char]
 f (2:2:1:xs) (a:b:c:ys) d = f (2:xs) ((c++"<"++b++","++a++">"):ys) d
 f (2:1:xs) ys ("int":d) = f (2:2:1:xs) ("int":ys) d
