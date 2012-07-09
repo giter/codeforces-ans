@@ -1,24 +1,29 @@
 <?php
 
 function line($line){
-	
-	if(preg_match("/^(\s*)?([a-zA-Z][a-zA-Z0-9]*)?(\#[a-zA-Z0-9]+)?(\.[\.a-zA-Z0-9\-_]+)?(\#[a-zA-Z0-9]+)?(\(([^\)]+)\))?(.+)$/",$line,$m)){
+	if(preg_match("/^(\s*)(h1|h2|h3|h4|h5|h6|div|p|blockquote|a|ul|li|ol)?(#[a-zA-Z0-9\-_]+)?(\.[\.a-zA-Z0-9\-_]+)?(#[a-zA-Z0-9\-_]+)?(\(([^\)]+)\))?/",$line,$m)){
+		
 		$e = array(
 			"weight" => strlen($m[1]),
 			"tag" => $m[2]?$m[2]: "div",
-			"id" => $m[3]?$m[3]:$m[5],
+			"id" => trim(str_replace("#","",$m[3]?$m[3]:$m[5])),
 			"classes" => trim(str_replace("."," ",$m[4])),
-			"attrs" => $m[7],
-			"text" => $m[8]
+			"attrs" => $m[7]
 		);
-		return $e;
-	}
 
-	return 0;
+		$e['text'] = ltrim(substr($line,strlen($m[0])));
+
+		return $e;
+	}else{
+		return array("text"=>$line);
+	}
 }
 
 function lh($e){
-	return "<${e['tag']} id='${e['id']}' class='${e['classes']}' ${e['attrs']}>${e['text']}";
+	if($e['tag'])
+		return "<${e['tag']}".($e['id']?" id='${e['id']}'":"").($e['classes']?" class='${e['classes']}'":"").($e['attrs']?" ${e['attrs']}":"").">${e['text']}";
+	else
+		return $e['text'];
 }
 
 function html($text){
@@ -31,33 +36,30 @@ function html($text){
 		
 		$e = line(rtrim($line));
 
-		if(count($stack) > 0 && $stack[count($stack)-1][1] < $e['weight']){
-			$str .= "</".$stack[count($stack)-1][0].">";
-			array_pop($stack);
+		if(isset($e['tag'])){
+			if(count($stack) && $stack[count($stack)-1][1] < $e['weight']){
+				$str .= "</".$stack[count($stack)-1][0].">";
+				array_pop($stack);
+			}
 		}
 
 		$str .= lh($e);
-		array_push($stack,array($e["id"],$e["weight"]));
+		
+		if($e['tag'])
+			array_push($stack,array($e["tag"],$e["weight"]));
 	}
 
-	while(count($stack) > 0){
+	while(count($stack)){
 		$v = array_pop($stack);
-		$str .= "</".$v[count($stack)-1][0].">";
+		$str .= "</".$v[0].">";
 	}
 
 	return $str;
 
 }
 
-echo html(<<<EOD
-p.a
-	abc
-	p#b
-		def
-	p(style='margin-left:10px')
-		hij
-
-EOD
-);
+while($l = readline()){
+	echo html($l);
+}
 
 ?>
