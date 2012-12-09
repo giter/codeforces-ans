@@ -1,14 +1,27 @@
-CC := ghc
-SOURCES := $(wildcard src/*.hs)
-TARGETS := $(patsubst %.hs,%.exe,$(SOURCES))
+CC := g++
+OPTIONS := -Wall -g
+SOURCES := $(wildcard src/*/*.cpp)
+TARGETS := $(patsubst %.cpp,%.exe,$(SOURCES))
 
+GHC := ghc
+HOPTIONS := -O2 -prof -auto-all --make
+HSOURCES := $(wildcard src/*/*.hs)
+HTARGETS := $(patsubst %.hs,%.hs.exe,$(HSOURCES))
 
-all	:  $(TARGETS)
+all	: cxx haskell
 
-%.exe : %.hs
-	@echo Compiling $<...
-	@$(CC) -O2 -prof -auto-all --make -outputdir bin $< -o $@
-	@mv $@ bin
+cxx : $(TARGETS)
+
+haskell : $(HTARGETS)
+
+%.hs.exe : %.hs
+	@echo Compiling $< ...
+	@$(GHC) $(HOPTIONS) $< -o $@
+	#@$(GHC) -O2 -prof -auto-all --make -outputdir bin $< -o $@
+
+%.exe : %.cpp
+	@echo Compiling $< ...
+	@$(CC) $(OPTIONS) $< -o $@
 
 clean	: 
-	@rm -rf bin/
+	@rm -rf src/*/*.exe
