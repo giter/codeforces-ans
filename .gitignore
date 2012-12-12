@@ -1,3 +1,7 @@
 *.swp
 *.exe
 bin/
+.settings
+.dist-buildwrapper
+.project
+.cproject
