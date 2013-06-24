@@ -7,9 +7,9 @@ func main(){
   m := make(map[string]int,1000)
   ln := make([]string,1000)
   ls := make([]int,1000)
+	
   var n string
-  var s int
-  var t int
+  var s,t int
   fmt.Scanln(&t)
 
     ms := int(-2000*1000) //max score
