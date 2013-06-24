@@ -18,6 +18,16 @@ func itos(v int) string{
 
   v /= 26
  }
+ 
+ bs := sb.Bytes()
+ i := 0
+ j := len(bs) - 1
+
+ for ; i < j ; {
+	 bs[i],bs[j] =bs[j],bs[i]
+	 i++
+	 j--
+ }
 
  return sb.String()
 }
@@ -39,16 +49,29 @@ func stoi(s string) int{
 
 func main(){
 
-  re := regexp.MustCompile("(R\\d+C\\d+)|([A-Z]{2}\\d+)")
-  ss := re.FindStringSubmatch("R23C11")
+	var n int
+	fmt.Scanf("%d\n",&n)
+	re := regexp.MustCompile("(R\\d+C\\d+)|(([A-Z]+)(\\d+))")
 
-  if ss[1] != "" {
-    fmt.Println(ss[1]);
-  }
+	for i := 0 ; i < n ; i ++ {
 
-  if(ss[2] != ""){
-  }
+	  var k string
+		fmt.Scanf("%s\n",&k)
 
-  fmt.Println(stoi("ZZ"))
-  
+		ss := re.FindStringSubmatch(k)
+		
+		if len(ss[1]) > 0  {
+			var a,b int
+			fmt.Sscanf(ss[1],"R%dC%d",&a,&b)
+			fmt.Printf("%s%d\n",itos(b),a)
+		}
+
+		if len(ss[2]) > 0 {
+			a := ss[3]
+			var b int
+			fmt.Sscanf(ss[4],"%d",&b)
+			fmt.Printf("R%dC%d\n",b,stoi(a))
+		}
+	}
+
 }
