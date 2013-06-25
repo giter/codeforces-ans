@@ -1,0 +1,161 @@
+package main
+
+import "fmt"
+import "time"
+import "container/list"
+
+var n = int(0)
+var z = [1000][1000][2]int{}
+
+func min(a int,b int) int{
+	if a>b { return b }
+	return a
+}
+
+func max(a int,b int) int {
+	if a > b { return a }
+	return b
+}
+
+func abs(a int) int{
+	if a > 0 { return a }
+	return -a
+}
+
+func p(a int) (int,int) {
+
+	t := 0
+	f := 0
+
+	if a == 0 { return t,f }
+
+	for ;a%5==0;a/=5 {
+		f++
+	}
+
+	for ;a%2==0;a/=2 {
+		t++
+	}
+
+	return t,f
+}
+
+func main(){
+
+
+
+	fmt.Scan(&n)
+
+	v := 0
+	zx := -1
+	zy := -1
+
+	for i:=0;i<n;i++ {
+		for j:=0;j<n;j++ {
+
+			fmt.Scan(&v)
+			z[i][j][0],z[i][j][1] = p(v)
+
+			if(v == 0){
+				zx = i
+				zy = j
+			}
+		}
+	}
+
+
+	for i:=1;i<n;i++{
+		z[i][0][0] += z[i-1][0][0]
+		z[i][0][1] += z[i-1][0][1]
+		z[0][i][0] += z[0][i-1][0]
+		z[0][i][1] += z[0][i-1][1]
+	}
+
+	for i:=1;i<n;i++ {
+		for j:=1;j<n;j++ {
+			for k:=0;k<2;k++ {
+				z[i][j][k] += min(z[i][j-1][k],z[i-1][j][k])
+			}
+		}
+	}
+
+	var ans = min(z[n-1][n-1][0],z[n-1][n-1][1])
+
+
+	if zx!=-1&&zy!=-1 && ans > 1 {
+
+		fmt.Println(1)
+
+		x := 0
+		y := 0
+
+		for x < zx {
+			fmt.Print("R")
+			x++
+		}
+
+		for y < n {
+			fmt.Print("D")
+			y++
+		}
+
+		for x < n {
+			fmt.Print("R")
+		}
+
+		fmt.Println()
+
+	}else{
+
+		fmt.Println(ans)
+
+		x := n-1
+		y := n-1
+		var k int
+		xs := list.New()
+
+		if(z[n-1][n-1][0] < z[n-1][n-1][1]) {
+			k = 0
+		}else{
+			k = 1
+		}
+/*
+		for i:=0;i<n;i++ {
+			for j:=0;j<n;j++ {
+				//fmt.Print("(",i,",",j,")"," ")
+				fmt.Print(z[i][j][k])
+				fmt.Print(" ")
+			}
+			fmt.Println()
+		}
+*/
+
+		for x!=0 || y!=0 {
+
+			if x==0 {
+				xs.PushBack("R")
+				y--
+			}else if y==0 {
+				xs.PushBack("D")
+				x--
+			}else {
+
+				if z[x-1][y][k] < z[x][y-1][k]{
+					xs.PushBack("D")
+					x--
+				}else{
+					xs.PushBack("R")
+					y--
+				}
+			}
+
+		}
+
+		for e:=xs.Back();e!=nil;e=e.Prev(){
+			fmt.Print(e.Value.(string))
+		}
+
+		fmt.Println()
+	}
+
+}
