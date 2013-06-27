@@ -1,5 +1,7 @@
 *.swp
 *.exe
+*.in
+*.out
 bin/
 .settings
 .dist-buildwrapper
