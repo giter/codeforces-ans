@@ -1,7 +1,8 @@
 package main
 
 import "fmt"
-import "time"
+import "os"
+import "bufio"
 import "container/list"
 
 var n = int(0)
@@ -40,11 +41,65 @@ func p(a int) (int,int) {
 	return t,f
 }
 
+
+func isDigit(b byte) bool{
+	return b >= '0' && b <= '9'
+}
+
+func readLine() error{
+	var err error
+	_buf,err = _in.ReadBytes('\n')
+	_lb = len(_buf)
+	_pos = 0
+	return err
+}
+
+func nextInt() (int,error){
+
+	for digit:=false;!digit; {
+
+		if _pos >= _lb {
+			err := readLine()
+			if err != nil {
+				return -1,err
+			}
+		}
+
+		for ; _pos < _lb && !digit ; _pos++ {
+
+			digit = isDigit(_buf[_pos])
+
+			if digit {
+				break
+			}
+		}
+
+	}
+
+	r := 0
+
+	for ; _pos < _lb && isDigit(_buf[_pos]) ; {
+		r = r*10 + int(_buf[_pos]) - '0'
+		_pos++
+	}
+
+
+	return r,nil
+}
+
+var (
+	_in = bufio.NewReader(os.Stdin)
+	_buf []byte
+	_lb = int(-1)
+	_pos = int(0)
+)
+
+
 func main(){
 
 
+	n,_ := nextInt()
 
-	fmt.Scan(&n)
 
 	v := 0
 	zx := -1
@@ -53,7 +108,8 @@ func main(){
 	for i:=0;i<n;i++ {
 		for j:=0;j<n;j++ {
 
-			fmt.Scan(&v)
+			v,_ = nextInt()
+
 			z[i][j][0],z[i][j][1] = p(v)
 
 			if(v == 0){
@@ -82,7 +138,7 @@ func main(){
 	var ans = min(z[n-1][n-1][0],z[n-1][n-1][1])
 
 
-	if zx!=-1&&zy!=-1 && ans > 1 {
+	if zx!=-1 && zy!=-1 && ans > 1 {
 
 		fmt.Println(1)
 
@@ -90,28 +146,34 @@ func main(){
 		y := 0
 
 		for x < zx {
-			fmt.Print("R")
+			fmt.Print("D")
 			x++
 		}
 
-		for y < n {
-			fmt.Print("D")
+		for y < zy {
+			fmt.Print("R")
 			y++
 		}
 
-		for x < n {
+		for x < n-1 {
+			fmt.Print("D")
+			x++
+		}
+
+		for y < n-1 {
 			fmt.Print("R")
+			y++
 		}
 
 		fmt.Println()
 
-	}else{
+	} else {
 
 		fmt.Println(ans)
 
+		var k int
 		x := n-1
 		y := n-1
-		var k int
 		xs := list.New()
 
 		if(z[n-1][n-1][0] < z[n-1][n-1][1]) {
@@ -119,18 +181,8 @@ func main(){
 		}else{
 			k = 1
 		}
-/*
-		for i:=0;i<n;i++ {
-			for j:=0;j<n;j++ {
-				//fmt.Print("(",i,",",j,")"," ")
-				fmt.Print(z[i][j][k])
-				fmt.Print(" ")
-			}
-			fmt.Println()
-		}
-*/
 
-		for x!=0 || y!=0 {
+		for !(x == 0 && y == 0 ) {
 
 			if x==0 {
 				xs.PushBack("R")
